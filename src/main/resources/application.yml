@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: springai
+  ai:
+    zhipuai:
+      api-key: 
+      chat:
+        options:
+          model: GLM-4-Flash
+
