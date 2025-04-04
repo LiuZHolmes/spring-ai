@@ -2,8 +2,6 @@ package com.hendricks.springai;
 
 import org.springframework.ai.tool.annotation.*;
 
-import java.util.Map;
-
 public class CalculatorTool {
 
 
