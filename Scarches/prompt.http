@@ -5,9 +5,12 @@ POST http://localhost:8080/extract
 Content-Type: application/json
 
 {
-    "subject": "镜厅谜案",
+    "subject": "坐错",
     "body": "一个姑娘上了高铁，见自己的座位上坐着一男士。她核对自己的票，客气地说：“先生，您坐错位置了吧？”\n男士拿出票，大声嚷嚷：“看清楚点，这是我的座位，你瞎了眼吗？！”\n女孩仔细看了他的票，不再做声，默默地站在他的身旁。\n一会儿火车开动了，女孩低头轻轻地对男士说：“先生，您没坐错位，但您坐错了车！”"
 }
 
 ### Get models
 GET http://172.26.112.1:1234/v1/models
+
+### 请求 /summary-email API 以获取摘要
+GET http://localhost:8080/summary-email?id=1

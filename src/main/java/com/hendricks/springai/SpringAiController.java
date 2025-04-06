@@ -1,5 +1,7 @@
 package com.hendricks.springai;
 
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.*;
 
 import lombok.AllArgsConstructor;
@@ -18,5 +20,10 @@ public class SpringAiController {
     @PostMapping("/extract")
     public String extract(@RequestBody ExtractionRequest request) {
         return springaiService.extract(request);
+    }
+
+    @GetMapping("/summary-email")
+    public Map<String, String> summarizeEmail(@RequestParam int id) {
+        return springaiService.summarizeEmail(id);
     }
 }
