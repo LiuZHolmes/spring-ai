@@ -1,5 +1,6 @@
 package com.hendricks.springai;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
@@ -28,10 +29,11 @@ public class SpringAiService {
         return chatClient.prompt(prompt).tools(new CalculatorTool()).call().content();
     }
 
-    public Map<String, String> summarizeEmail(int id) {
+    public SummaryResultDto summarizeEmail(int id) {
         try {
             // Load email.json
-            String jsonContent = new String(Files.readAllBytes(Paths.get("/home/cruX/spring-ai/spring-ai/data/email.json")));
+            String jsonContent = new String(
+                    Files.readAllBytes(Paths.get("/home/cruX/spring-ai/spring-ai/data/email.json")));
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(jsonContent);
 
@@ -39,35 +41,43 @@ public class SpringAiService {
             JsonNode rows = rootNode.get("rows");
             JsonNode targetRow = rows.get(id);
             if (targetRow == null) {
-                return Map.of("error", "Invalid ID: No email thread found.");
+                throw new IllegalArgumentException("Invalid ID: No email thread found.");
             }
 
             JsonNode thread = targetRow.get("row").get("thread");
-            String existingSummary = targetRow.get("row").get("summary").asText();
-
-            // Prepare prompt for the model
             String threadContent = thread.toString();
-            String prompt = String.format("请总结以下邮件线程内容：%s", threadContent);
+            String prompt = String.format(
+                    "请总结以下邮件线程内容，并返回一个JSON对象，格式为：{\"who\":[], \"what\":\"\", \"when\":\"\", \"why\":\"\", \"how\":\"\", \"where\":\"\"}：%s",
+                    threadContent);
 
-            // Call the model for summarization
             ChatClient chatClient = builder.build();
-            String generatedSummary = chatClient.prompt(prompt).call().content();
+            SummaryResultDto result = null;
+            int retries = 3;
+            String errorMessage = "";
 
-            // Evaluate the generated summary
-            String evaluationPrompt = String.format(
-                "请对以下生成的总结与已有总结进行评估：\n\n生成的总结：%s\n\n已有总结：%s\n\n请用中文简短地给出评价。",
-                generatedSummary, existingSummary
-            );
-            String evaluation = chatClient.prompt(evaluationPrompt).call().content();
+            while (retries > 0) {
+                String response = chatClient.prompt(prompt + errorMessage).tools(new SummaryResultValidationTool()).call().content();
+                System.out.println("Response: " + response);
+                System.out.println("Error message: " + errorMessage);
+                if (response.startsWith("Validation failed:")) {
+                    errorMessage = String.format("\n上次生成的结果有以下问题：%s\n请重新生成符合要求的JSON对象。", response);
+                    retries--;
+                } else {
+                    response = response.substring(1, response.length() - 1).replace("\\", "");
+                    System.out.println("Response after replacement: " + response);
+                    result = objectMapper.readValue(response, SummaryResultDto.class);
+                    break;
+                }
+            }
 
-            // Return structured output
-            return Map.of(
-                "generatedSummary", generatedSummary,
-                "evaluation", evaluation
-            );
+            if (result == null) {
+                throw new RuntimeException("Failed to generate valid summary after 3 retries.");
+            }
+
+            return result;
 
         } catch (Exception e) {
-            return Map.of("error", "Error processing the request: " + e.getMessage());
+            throw new RuntimeException("Error processing the request: " + e.getMessage(), e);
         }
     }
 }

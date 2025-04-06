@@ -23,7 +23,7 @@ public class SpringAiController {
     }
 
     @GetMapping("/summary-email")
-    public Map<String, String> summarizeEmail(@RequestParam int id) {
+    public SummaryResultDto summarizeEmail(@RequestParam int id) {
         return springaiService.summarizeEmail(id);
     }
 }
