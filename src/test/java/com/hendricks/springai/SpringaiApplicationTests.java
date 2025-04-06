@@ -1,13 +1,6 @@
 package com.hendricks.springai;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.ai.evaluation.EvaluationRequest;
-import org.springframework.ai.evaluation.EvaluationResponse;
-import org.springframework.ai.evaluation.RelevancyEvaluator;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import lombok.AllArgsConstructor;

@@ -6,7 +6,7 @@ public class CalculatorTool {
 
 
     @Tool(description ="Performs basic mathematical calculations.")
-    public String execute(@ToolParam(description = "num1") Double num1, @ToolParam(description = "num2") Double num2, @ToolParam(description = "operation") String operation) {
+    public String execute(@ToolParam(description = "num1") Double num1, @ToolParam(description = "num2") Double num2, @ToolParam(description = "operation:+-*/") String operation) {
         System.out.println("Call tools");
         switch (operation) {
             case "+":

@@ -18,7 +18,7 @@ public class SpringAiService {
 
     public String extract(ExtractionRequest request) {
         // 组装提示
-        String prompt = String.format("请根据主题 '%s' 和内容 '%s' 提取大概摘要。", request.getSubject(), request.getBody());
+        String prompt = String.format("请根据主题 '%s' 和内容 '%s' 提取大概摘要, 并用中文返回结果。", request.getSubject(), request.getBody());
         ChatClient chatClient = builder.build();
         return chatClient.prompt(prompt).tools(new CalculatorTool()).call().content();
     }
